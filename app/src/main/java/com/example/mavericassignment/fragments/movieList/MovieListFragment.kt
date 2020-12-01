@@ -3,20 +3,20 @@ package com.example.mavericassignment.fragments.movieList
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.mavericassignment.R
 import com.example.mavericassignment.Utils
 import com.example.mavericassignment.adapter.MovieListAdapter
@@ -66,7 +66,7 @@ class MovieListFragment : Fragment() {
                 if (p0!!.isNotEmpty() && p0.length > 5) {
 
                         val factory : MovieDataSourceFactory by lazy {
-                            MovieDataSourceFactory(context!!)
+                            MovieDataSourceFactory(context!!, p0)
                         }
                         mViewModel.mutableLiveData = factory.mutableLiveData
 
@@ -80,7 +80,30 @@ class MovieListFragment : Fragment() {
 
                     mViewModel.getData().observe(viewLifecycleOwner, object : Observer<PagedList<MovieData>> {
                         override fun onChanged(t: PagedList<MovieData>?) {
-                            movieListAdapter.submitList(t)
+                            if (t != null && t.size > 0) {
+                                mBinding.noData.visibility = GONE
+                                mBinding.movieList.visibility = VISIBLE
+
+                                mBinding.movieList.apply {
+                                    mBinding.movieList.layoutManager =
+                                        GridLayoutManager(context, 2)
+
+                                    movieListAdapter.submitList(t)
+                                    mBinding.movieList.adapter = movieListAdapter
+                                    movieListAdapter.onItemClick = { movieData ->
+                                        val bundle = Bundle()
+                                        bundle.putString("ID", movieData.imdbID)
+                                        findNavController().navigate(
+                                            R.id.action_FirstFragment_to_SecondFragment,
+                                            bundle
+                                        )
+                                    }
+                                }
+                            }else{
+                                mBinding.noData.visibility = VISIBLE
+                                mBinding.movieList.visibility = GONE
+                            }
+
                         }
                     })
                     /*val request = RetrofitFactory.buildService(APIInterface::class.java)
