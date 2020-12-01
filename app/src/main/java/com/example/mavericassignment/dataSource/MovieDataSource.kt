@@ -12,7 +12,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MovieDataSource(private val context: Context, private val query: String) : PageKeyedDataSource<Int, MovieData>() {
+class MovieDataSource(private val context: Context, private val query: CharSequence) : PageKeyedDataSource<Int, MovieData>() {
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, MovieData>) {
         if (context.isInternetAvailable()) {
@@ -38,7 +38,7 @@ class MovieDataSource(private val context: Context, private val query: String) :
 
         context.showProgressBar()
 
-        RetrofitFactory.apiService.getMovieByTitle(query,"").enqueue(object :Callback<ListData>{
+        RetrofitFactory.apiService.getMovieByTitle(query as String,"").enqueue(object :Callback<ListData>{
 
             override fun onResponse(call: Call<ListData>, response: Response<ListData>) {
                 Utils.hideProgressBar()
@@ -56,7 +56,7 @@ class MovieDataSource(private val context: Context, private val query: String) :
 
     private fun getMoreMovies(pageNo: Int, previousOrNextPageNo: Int, callback: LoadCallback<Int, MovieData>) {
 
-        RetrofitFactory.apiService.getMovieByTitle(query, "movie").enqueue(object : Callback<ListData> {
+        RetrofitFactory.apiService.getMovieByTitle(query as String, "movie").enqueue(object : Callback<ListData> {
             override fun onResponse(call: Call<ListData>, response: Response<ListData>) {
                 val movieResponse = response.body()?.Search
                 movieResponse?.let { callback.onResult(it, previousOrNextPageNo) }
