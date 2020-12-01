@@ -1,24 +1,24 @@
 package com.example.mavericassignment.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mavericassignment.R
 import com.example.mavericassignment.model.MovieData
 
-class MovieListAdapter(private val data: ArrayList<MovieData>) :
-    RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
+class MovieListAdapter(mContext: Context):
+     PagedListAdapter<MovieData, MovieListAdapter.ViewHolder>(MovieListDiffUtil){
+    var data: ArrayList<MovieData> = ArrayList<MovieData>()
 
-    /*private var listener: OnItemClickListener ? = null
-
-    fun setListener(listener: OnItemClickListener ) {
-        this.listener = listener
-    }*/
     var onItemClick: ((MovieData) -> Unit)? = null
+
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
@@ -54,15 +54,22 @@ class MovieListAdapter(private val data: ArrayList<MovieData>) :
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.setData(data[position], position)
-    }
 
     override fun getItemCount(): Int {
         return data.size
     }
 
-   /* interface OnItemClickListener  {
-        fun onItemClick(view: View, pos: Int, data: MovieData)
-    }*/
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.setData(data[position], position)
+    }
+
+    companion object {
+        private val MovieListDiffUtil = object : DiffUtil.ItemCallback<MovieData>() {
+            override fun areItemsTheSame(oldItem: MovieData, newItem: MovieData): Boolean =
+                oldItem.imdbID == newItem.imdbID
+            override fun areContentsTheSame(oldItem: MovieData, newItem: MovieData): Boolean =
+                newItem == oldItem
+        }
+    }
+
 }

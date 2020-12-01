@@ -60,44 +60,43 @@ class MovieDetails : Fragment() {
                 ViewModelProviders.of(it).get(MovieDetailVM::class.java)
         }
 
-        val request = RetrofitFactory.buildService(APIInterface::class.java)
-        val call = imdbID?.let { request.getMovieById("b9bd48a6", it) }
-
-        call?.enqueue(object : Callback<MovieDetails> {
-            override fun onResponse(
-                call: Call<MovieDetails>,
-                response: Response<MovieDetails>
-            ) {
-                if (response.isSuccessful) {
-                    if (response.body() != null) {
-                        var movieDetails: MovieDetails = response.body()!!
-                        mBinding.textView.text = movieDetails.Title
-                        mBinding.textView2.text = movieDetails.Year
-                        context?.let {
-                            Glide.with(it).load(movieDetails.Poster).into(mBinding.imageView)
+        imdbID?.let {
+            RetrofitFactory.apiService.getMovieById("b9bd48a6", it).enqueue(object : Callback<MovieDetails> {
+                override fun onResponse(
+                    call: Call<MovieDetails>,
+                    response: Response<MovieDetails>
+                ) {
+                    if (response.isSuccessful) {
+                        if (response.body() != null) {
+                            var movieDetails: MovieDetails = response.body()!!
+                            mBinding.textView.text = movieDetails.Title
+                            mBinding.textView2.text = movieDetails.Year
+                            context?.let {
+                                Glide.with(it).load(movieDetails.Poster).into(mBinding.imageView)
+                            }
+                            mBinding.textView3.text = movieDetails.Runtime
+                            mBinding.textView5.text = "*" + movieDetails.imdbRating
+                            mBinding.textView7.text = movieDetails.Plot
+                            mBinding.languages.text = movieDetails.Language
+                            var ratings = movieDetails.Ratings
+                            if (ratings != null && ratings.size > 0) {
+                                mBinding.score.text = ratings[0].Value
+                                mBinding.popularity.text = ratings[1].Value
+                                mBinding.reviews.text = ratings[2].Value
+                            }
+                            mBinding.director.text = movieDetails.Director
+                            mBinding.actor.text = movieDetails.Actors
+                            mBinding.writer.text = movieDetails.Writer
                         }
-                        mBinding.textView3.text = movieDetails.Runtime
-                        mBinding.textView5.text = "*" + movieDetails.imdbRating
-                        mBinding.textView7.text = movieDetails.Plot
-                        mBinding.languages.text = movieDetails.Language
-                        var ratings = movieDetails.Ratings
-                        if (ratings != null && ratings.size > 0) {
-                            mBinding.score.text = ratings[0].Value
-                            mBinding.popularity.text = ratings[1].Value
-                            mBinding.reviews.text = ratings[2].Value
-                        }
-                        mBinding.director.text = movieDetails.Director
-                        mBinding.actor.text = movieDetails.Actors
-                        mBinding.writer.text = movieDetails.Writer
                     }
                 }
-            }
 
-            override fun onFailure(call: Call<MovieDetails>, t: Throwable) {
-                Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
-            }
+                override fun onFailure(call: Call<MovieDetails>, t: Throwable) {
+                    Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
+                }
 
-        })
+            })
+        }
 
     }
 

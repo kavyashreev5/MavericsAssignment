@@ -7,9 +7,8 @@ import retrofit2.http.*
 
 interface APIInterface {
     //b9bd48a6
-    @GET("?")
-    fun getMovieByTitle(@Query("apikey") apikey: String,
-                        @Query("s") title: String,
+    @GET("?apikey=b9bd48a6")
+    fun getMovieByTitle(@Query("s") title: String,
                         @Query("type") type: String):
             Call<ListData>
 

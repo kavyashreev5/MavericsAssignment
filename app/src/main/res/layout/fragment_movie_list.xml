@@ -11,7 +11,7 @@
             type="com.example.mavericassignment.fragments.movieList.MovieListVM" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -19,38 +19,50 @@
         android:focusableInTouchMode="true">
 
         <LinearLayout
+            android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_margin="8dp"
             android:background="@color/white"
-            android:gravity="center|start">
+            android:gravity="center|start"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <EditText
                 android:id="@+id/movie_name"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@drawable/search_box"
-                android:hint="Search Movie"
                 android:drawableLeft="@drawable/ic_baseline_search_24"
-                android:gravity="center" >
-            </EditText>
+                android:gravity="center"
+                android:hint="Search Movie"></EditText>
 
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/movieList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/linearLayout3"
+            app:layout_constraintStart_toStartOf="@+id/linearLayout3"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
-        <TextView
-            android:id="@+id/no_data"
-            android:layout_width="match_parent"
-            android:text="No Data"
-            android:textColor="@android:color/black"
-            android:textSize="28sp"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+          <TextView
+             android:id="@+id/no_data"
+             android:layout_width="match_parent"
+             android:text="No Data"
+             android:textColor="@android:color/black"
+             android:textSize="28sp"
+             android:gravity="center"
+             android:textStyle="bold"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="@+id/linearLayout3"
+              app:layout_constraintStart_toStartOf="@+id/linearLayout3"
+              app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+             android:layout_height="0dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

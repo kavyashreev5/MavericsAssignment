@@ -11,25 +11,18 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import com.example.mavericassignment.R
 import com.example.mavericassignment.Utils
 import com.example.mavericassignment.adapter.MovieListAdapter
+import com.example.mavericassignment.dataSource.MovieDataSourceFactory
 import com.example.mavericassignment.databinding.FragmentMovieListBinding
-import com.example.mavericassignment.model.ListData
 import com.example.mavericassignment.model.MovieData
-import com.example.mavericassignment.network.APIInterface
-import com.example.mavericassignment.network.RetrofitFactory
-import retrofit2.Call
-import retrofit2.Response
-import retrofit2.Callback
-
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -71,7 +64,26 @@ class MovieListFragment : Fragment() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if (p0!!.isNotEmpty() && p0.length > 5) {
-                    val request = RetrofitFactory.buildService(APIInterface::class.java)
+
+                        val factory : MovieDataSourceFactory by lazy {
+                            MovieDataSourceFactory(context!!)
+                        }
+                        mViewModel.mutableLiveData = factory.mutableLiveData
+
+                        val config = PagedList.Config.Builder()
+                            .setEnablePlaceholders(false)
+                            .setPageSize(10)
+                            .build()
+
+                        mViewModel.movieList = LivePagedListBuilder(factory, config)
+                            .build()
+
+                    mViewModel.getData().observe(viewLifecycleOwner, object : Observer<PagedList<MovieData>> {
+                        override fun onChanged(t: PagedList<MovieData>?) {
+                            movieListAdapter.submitList(t)
+                        }
+                    })
+                    /*val request = RetrofitFactory.buildService(APIInterface::class.java)
                     val call = request.getMovieByTitle("b9bd48a6", p0.toString(), "movie")
 
                     call.enqueue(object : Callback<ListData> {
@@ -87,9 +99,7 @@ class MovieListFragment : Fragment() {
                                     mBinding.movieList.layoutManager = GridLayoutManager(context, 2)
 
                                     movieListAdapter = response.body()!!.Search?.let { it1 ->
-                                        MovieListAdapter(
-                                            it1
-                                        )
+                                       movieListAdapter.submitList(it1)
                                     }!!
 
                                     mBinding.movieList.adapter = movieListAdapter
@@ -109,7 +119,7 @@ class MovieListFragment : Fragment() {
                         override fun onFailure(call: Call<ListData>, t: Throwable) {
                             Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
                         }
-                    })
+                    })*/
                 }
             }
         })

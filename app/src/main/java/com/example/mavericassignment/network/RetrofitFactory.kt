@@ -26,5 +26,7 @@ object RetrofitFactory {
         return retrofit.create(service)
     }
 
-
+    val apiService :  APIInterface by lazy{
+        retrofit.create(APIInterface::class.java)
+    }
 }
